@@ -19,10 +19,17 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="en"
+      lang="pl"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <header style={{ background: "#f0f0f0", padding: "1rem" }}>
+          <nav>
+            <strong>Moja Aplikacja Szkolna</strong>
+          </nav>
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
