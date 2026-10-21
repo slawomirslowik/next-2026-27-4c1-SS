@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Counter from '@/components/Counter';
 import Card from '@/components/Card';
+import GreetingForm from '@/components/GreetingForm';
 
 export default function HomePage() {
   return (
@@ -11,6 +12,7 @@ export default function HomePage() {
        <Card title="Licznik odwiedzin">
         <Counter />
       </Card>
+      <GreetingForm />
     </main>
   );
 }
