@@ -1,4 +1,4 @@
-# Projekt Next.js: Hooki React — useState, useContext i współdzielenie stanu
+# Hooki React — useState, useContext i współdzielenie stanu
 
 W tym bloku zajęć pogłębisz wiedzę o **hookach** React — funkcjach pozwalających komponentom funkcyjnym korzystać ze stanu, kontekstu i innych mechanizmów Reacta. Nauczysz się też, jak **współdzielić stan** między komponentami na kilka różnych sposobów.
 
@@ -18,7 +18,7 @@ Hooki to funkcje zaczynające się od `use...`, które pozwalają komponentom fu
 | `useRef` | przechowuje wartość bez wywoływania ponownego renderu; dostęp do elementu DOM |
 | `useMemo` | zapamiętuje wynik kosztownego obliczenia między renderami |
 | `useCallback` | zapamiętuje funkcję, by nie była tworzona od nowa przy każdym renderze |
-| `useActionState` | obsługa stanu formularzy ze Server Actions |
+| `useActionState` | obsługa stanu formularzy ze Server Actions (poznasz w instrukcji `10-Formularze-ServerActions.md`) |
 
 ### Dwie żelazne zasady hooków
 

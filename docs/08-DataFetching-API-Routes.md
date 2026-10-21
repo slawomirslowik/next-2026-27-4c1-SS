@@ -1,4 +1,4 @@
-# Projekt Next.js: Pobieranie danych — Server Components i Route Handlers (API)
+# Pobieranie danych — Server Components i Route Handlers (API)
 
 W tym bloku nauczysz się pobierać dane w komponentach serwerowych (`fetch` w Server Component) oraz tworzyć własne, proste endpointy API za pomocą **Route Handlers**.
 
@@ -146,7 +146,9 @@ async function getPost(id) {
 }
 
 export default async function PostPage({ params }) {
-  const post = await getPost(params.id);
+  // w Next.js 15+ `params` to Promise — trzeba go "odczekać"
+  const { id } = await params;
+  const post = await getPost(id);
 
   return (
     <main style={{ padding: '2rem' }}>
@@ -158,6 +160,8 @@ export default async function PostPage({ params }) {
 ```
 
 Sprawdź: <http://localhost:3000/posts/1>
+
+> Nazwa folderu w nawiasach kwadratowych (`[id]`) staje się kluczem w obiekcie `params`. Zapis `params.id` bez `await` działał w starszych wersjach Next.js — w tej wersji zwróci `undefined`.
 
 ---
 

@@ -1,4 +1,4 @@
-# Projekt Next.js: Formularze i Server Actions
+# Formularze i Server Actions
 
 W tym bloku nauczysz się obsługiwać formularze w Next.js na dwa sposoby: po stronie klienta (kontrolowane komponenty) oraz nowocześniej — za pomocą **Server Actions**, czyli funkcji wykonywanych bezpośrednio na serwerze bez tworzenia osobnego API.
 
@@ -78,24 +78,25 @@ export default function ContactPage() {
 }
 ```
 
-Dyrektywa `'use server'` wewnątrz funkcji oznacza, że kod wykonuje się **na serwerze**, nawet jeśli formularz jest renderowany po stronie klienta.
+Dyrektywa `'use server'` wewnątrz funkcji oznacza, że kod wykonuje się **na serwerze**. Ten zapis działa, bo `ContactPage` jest Server Componentem (brak `'use client'`).
+
+> **Sprawdź w DevTools:** otwórz zakładkę **Network** i wyślij formularz. Zobaczysz żądanie `POST` z nagłówkiem `Next-Action` — tak wygląda wywołanie Server Action "od środka". Komunikat z `console.log` pojawi się w **terminalu** (`npm run dev`), a nie w konsoli przeglądarki.
 
 ---
 
-## Krok 3: Walidacja i komunikat zwrotny (`useFormState` / `useActionState`)
+## Krok 3: Walidacja i komunikat zwrotny (`useActionState`)
 
-Aby wyświetlić informację zwrotną po wysłaniu formularza, użyj hooka `useActionState` (React 19 / Next.js).
+Aby wyświetlić informację zwrotną po wysłaniu formularza, użyj hooka `useActionState` (React 19).
 
-Zaktualizuj `src/app/contact/page.js`:
+`useActionState` działa tylko w **Client Component** (`'use client'`), a w takim pliku nie wolno definiować funkcji z `'use server'`. Dlatego akcję przenosimy do **osobnego pliku**.
 
-```jsx
-'use client';
+Utwórz `src/app/contact/actions.js`:
 
-import { useActionState } from 'react';
+```js
+'use server';
 
-async function submitContact(prevState, formData) {
-  'use server';
-
+// useActionState przekazuje DWA argumenty: poprzedni stan i dane formularza
+export async function submitContact(prevState, formData) {
   const email = formData.get('email');
 
   if (!email || !email.includes('@')) {
@@ -104,16 +105,27 @@ async function submitContact(prevState, formData) {
 
   return { success: true, message: 'Dziękujemy za zgłoszenie!' };
 }
+```
+
+Zaktualizuj `src/app/contact/page.js`:
+
+```jsx
+'use client';
+
+import { useActionState } from 'react';
+import { submitContact } from './actions';
 
 export default function ContactPage() {
-  const [state, formAction] = useActionState(submitContact, { message: '' });
+  const [state, formAction, isPending] = useActionState(submitContact, { message: '' });
 
   return (
     <main style={{ padding: '2rem' }}>
       <h1>Kontakt</h1>
       <form action={formAction}>
         <input name="email" type="email" placeholder="Twój e-mail" required />
-        <button type="submit">Wyślij</button>
+        <button type="submit" disabled={isPending}>
+          {isPending ? 'Wysyłanie...' : 'Wyślij'}
+        </button>
       </form>
       {state.message && <p>{state.message}</p>}
     </main>
@@ -121,13 +133,54 @@ export default function ContactPage() {
 }
 ```
 
-> Uwaga: dokładna nazwa hooka (`useFormState` vs `useActionState`) zależy od wersji React/Next.js w projekcie — sprawdź `node_modules/next/dist/docs/` oraz komunikaty deprecacji w konsoli.
+> **Zasada:** `'use server'` *wewnątrz funkcji* (jak w Kroku 2) działa tylko w Server Component. Jeśli formularz jest Client Componentem, akcja musi leżeć w osobnym pliku z `'use server'` na górze.
+
+---
+
+## Krok 3b: Formularz z metodą `GET` — wyszukiwarka
+
+Server Actions zawsze wysyłają dane jako `POST` — nie da się ich użyć z `GET`. Jeśli chcesz, żeby dane formularza trafiły do adresu URL jako parametry (np. żeby wynik dało się zapisać w zakładkach albo udostępnić linkiem), użyj zwykłego formularza HTML z `method="get"`.
+
+Przykład prostej wyszukiwarki, `src/app/szukaj/page.js`:
+
+```jsx
+export default async function SzukajPage({ searchParams }) {
+  // w Next.js 15+ `searchParams` to Promise
+  const { q: query = '' } = await searchParams;
+
+  return (
+    <main style={{ padding: '2rem' }}>
+      <h1>Wyszukiwarka</h1>
+      <form action="/szukaj" method="get">
+        <input name="q" type="text" defaultValue={query} placeholder="Czego szukasz?" />
+        <button type="submit">Szukaj</button>
+      </form>
+      {query && <p>Wyniki dla frazy: <strong>{query}</strong></p>}
+    </main>
+  );
+}
+```
+
+Po wysłaniu formularza przeglądarka przejdzie na adres np. `/szukaj?q=nextjs`, a komponent strony odczyta parametr `q` z `searchParams` — bez żadnego `'use server'` ani `fetch`.
+
+### Różnica między `GET` a `POST` w formularzu
+
+| Cecha | `method="get"` | `method="post"` / Server Action |
+|---|---|---|
+| Gdzie trafiają dane | W adresie URL (`?q=...`) | W treści żądania (niewidoczne w URL) |
+| Można zapisać w zakładkach / udostępnić link | Tak | Nie |
+| Limit rozmiaru danych | Mały (ograniczenia URL) | Praktycznie brak |
+| Dane wrażliwe (hasła, dane osobowe) | Niezalecane | Właściwy wybór |
+| Typowe zastosowanie | Wyszukiwarki, filtry, sortowanie | Logowanie, zapis/edycja danych, formularze kontaktowe |
+| Wspierane przez Server Actions | Nie | Tak |
+
+**Zasada praktyczna:** jeśli formularz tylko *odczytuje* lub *filtruje* dane i warto, by stan był widoczny w adresie URL — użyj `GET`. Jeśli formularz *zapisuje*, *zmienia* lub *usuwa* dane (lub zawiera dane wrażliwe) — użyj `POST` (lub Server Action, które i tak wymusza `POST`).
 
 ---
 
 ## Krok 4: Wysyłka formularza do własnego Route Handlera (alternatywa)
 
-Jeśli wolisz jawne API (np. do integracji z aplikacją mobilną), możesz połączyć formularz kliencki z endpointem z poprzedniego bloku zajęć (`/api/greetings`):
+Jeśli wolisz jawne API (np. do integracji z aplikacją mobilną), możesz połączyć formularz kliencki z endpointem z instrukcji `08-DataFetching-API-Routes.md` (`/api/greetings`):
 
 ```jsx
 'use client';
@@ -175,7 +228,8 @@ async function submitContact(formData) {
 
 - [ ] Działa prosty formularz kontrolowany po stronie klienta
 - [ ] Działa formularz oparty na Server Action (`'use server'`)
-- [ ] Dodana walidacja i komunikat zwrotny
+- [ ] Dodana walidacja i komunikat zwrotny (`useActionState`, akcja w osobnym pliku)
+- [ ] Działa formularz z `method="get"` (wyszukiwarka) i rozumiesz różnicę GET vs POST
 - [ ] (opcjonalnie) formularz wysyła dane do własnego API (`/api/greetings`)
 - [ ] (opcjonalnie) przekierowanie po wysłaniu formularza
 

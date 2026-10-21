@@ -1,4 +1,4 @@
-# Projekt Next.js: Podstawy App Routera i Layouty
+# Podstawy App Routera i Layouty
 
 W tym projekcie nauczysz się podstaw tworzenia aplikacji w Next.js z użyciem **App Routera**, routingu opartego na folderach oraz **layoutów**.
 
@@ -13,7 +13,7 @@ W tym projekcie nauczysz się podstaw tworzenia aplikacji w Next.js z użyciem *
 - Node.js (LTS)
 - npm
 - Visual Studio Code
-- Utworzony projekt Next.js (z katalogiem `app/`)
+- Utworzony projekt Next.js (z katalogiem `src/app/`)
 
 Uruchomienie projektu:
 
@@ -27,7 +27,7 @@ Aplikacja będzie dostępna pod adresem: <http://localhost:3000>
 
 ## Krok 1: Struktura katalogu `app` i hierarchia layoutów
 
-W App Routerze Next.js routing opiera się na plikach i folderach wewnątrz katalogu `app`.
+W App Routerze Next.js routing opiera się na plikach i folderach wewnątrz katalogu `app` (w tym projekcie: `src/app`). Folder `src` jest opcjonalny — nie pojawia się w adresie URL.
 
 - `layout.js` – wspólny układ (np. nagłówek, stopka, menu) dla stron w danym katalogu i jego podkatalogach.
 - `page.js` – treść konkretnej podstrony.
@@ -36,14 +36,14 @@ W App Routerze Next.js routing opiera się na plikach i folderach wewnątrz kata
 `{children}` w `layout.js` jest miejscem, gdzie renderuje się aktualna podstrona (`page.js`).
 
 > **Dobra praktyka – nazewnictwo funkcji komponentów:**
-> O tym, pod jakim adresem URL dostępna jest strona, decyduje **ścieżka pliku** (`app/about/page.js` → `/about`), a nie nazwa funkcji wewnątrz niego. Dzięki temu w każdym pliku `page.js` czy `layout.js` możesz (technicznie) użyć dowolnej nazwy funkcji – nawet tej samej w kilku plikach – i aplikacja nadal zadziała poprawnie.
+> O tym, pod jakim adresem URL dostępna jest strona, decyduje **ścieżka pliku** (`src/app/about/page.js` → `/about`), a nie nazwa funkcji wewnątrz niego. Dzięki temu w każdym pliku `page.js` czy `layout.js` możesz (technicznie) użyć dowolnej nazwy funkcji – nawet tej samej w kilku plikach – i aplikacja nadal zadziała poprawnie.
 >
 > Mimo to **nie powielaj nazw funkcji** między plikami i nadawaj im czytelne, unikalne nazwy (konwencja `PascalCase`, zgodna z rolą pliku), ponieważ:
 > - ułatwia to czytanie kodu i szybkie zorientowanie się „co to za komponent” (np. w React DevTools, gdzie wszystkie komponenty o nazwie `Page` wyglądałyby identycznie),
 > - ułatwia debugowanie – komunikaty błędów i stack trace pokazują nazwę funkcji, a nie ścieżkę pliku,
 > - zapobiega pomyłkom przy kopiowaniu kodu między plikami (łatwo zapomnieć o zmianie nazwy).
 >
-> Przykład dobrego nazewnictwa w tym projekcie: `HomePage` (`app/page.js`), `AboutPage` (`app/about/page.js`), `RootLayout` (`app/layout.js`).
+> Przykład dobrego nazewnictwa w tym projekcie: `HomePage` (`src/app/page.js`), `AboutPage` (`src/app/about/page.js`), `RootLayout` (`src/app/layout.js`).
 
 > **Dobra praktyka – struktura pojedynczego pliku:**
 > Zarówno w `page.js`, jak i `layout.js` warto zachować stałą, czytelną kolejność elementów w pliku:
@@ -82,7 +82,7 @@ W App Routerze Next.js routing opiera się na plikach i folderach wewnątrz kata
 
 ## Krok 2: Pierwsza podstrona (strona główna)
 
-Otwórz plik `app/page.js` i zamień jego zawartość na:
+Otwórz plik `src/app/page.js` i zamień jego zawartość na:
 
 ```jsx
 export default function HomePage() {
@@ -101,7 +101,7 @@ Zapisz plik i sprawdź wynik w przeglądarce: <http://localhost:3000>
 
 ## Krok 3: Modyfikacja wspólnego layoutu
 
-Otwórz `app/layout.js` i dodaj wspólne elementy interfejsu (np. nagłówek):
+Otwórz `src/app/layout.js` i dodaj wspólne elementy interfejsu (np. nagłówek):
 
 ```jsx
 export default function RootLayout({ children }) {
@@ -126,7 +126,7 @@ Od teraz nagłówek będzie widoczny na stronach korzystających z tego layoutu.
 
 ## Krok 4: Dodanie podstrony „O nas”
 
-Utwórz folder `app/about` i plik `app/about/page.js`:
+Utwórz folder `src/app/about` i plik `src/app/about/page.js`:
 
 ```jsx
 export default function AboutPage() {
@@ -145,7 +145,7 @@ Sprawdź stronę: <http://localhost:3000/about>
 
 ## Krok 5: Nawigacja komponentem `Link`
 
-Wróć do `app/page.js`, zaimportuj `Link` i dodaj przejście do podstrony:
+Wróć do `src/app/page.js`, zaimportuj `Link` i dodaj przejście do podstrony:
 
 ```jsx
 import Link from 'next/link';
@@ -172,7 +172,7 @@ Jeśli chcesz wydzielić sekcję z innym layoutem (np. landing page lub panel), 
 ### Przykładowa struktura
 
 ```text
-app/
+src/app/
 ├── layout.js
 ├── page.js
 └── (marketing)/
@@ -188,9 +188,9 @@ app/
 
 ## Szybka checklista
 
-- [ ] `app/page.js` działa jako strona główna
-- [ ] `app/layout.js` zawiera wspólny nagłówek
-- [ ] `app/about/page.js` renderuje stronę „O nas”
+- [ ] `src/app/page.js` działa jako strona główna
+- [ ] `src/app/layout.js` zawiera wspólny nagłówek
+- [ ] `src/app/about/page.js` renderuje stronę „O nas”
 - [ ] link z `/` do `/about` działa
 - [ ] (opcjonalnie) utworzona grupa routingu `(marketing)`
 

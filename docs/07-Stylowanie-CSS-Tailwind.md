@@ -1,4 +1,4 @@
-# Projekt Next.js: Stylowanie — CSS, CSS Modules i Tailwind CSS
+# Stylowanie — CSS, CSS Modules i Tailwind CSS
 
 W tym bloku nauczysz się różnych sposobów stylowania aplikacji Next.js: globalnych arkuszy CSS, modułowych stylów (**CSS Modules**) oraz frameworka **Tailwind CSS**, który jest już skonfigurowany w tym projekcie.
 
