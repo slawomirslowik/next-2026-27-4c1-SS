@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Card from '@/components/Card';
 
 export default function AboutPage() {
@@ -8,6 +9,7 @@ export default function AboutPage() {
         <h2>------------------------------------------------</h2>
         <p>Dowiedz się więcej o naszej szkolnej inicjatywie!</p>
       </Card>
+      <Link href="/">Wróć na stronę główną</Link>
     </main>
   );
 }
